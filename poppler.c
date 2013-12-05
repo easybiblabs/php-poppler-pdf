@@ -60,6 +60,7 @@ PHP_MINIT_FUNCTION(poppler)
         PHP_POPPLER_DOCUMENT_NAME,
         module_number
     );
+    g_type_init();
     return SUCCESS;
 }
 
