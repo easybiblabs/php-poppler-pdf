@@ -15,4 +15,4 @@ before_script:
 script:
     - make test | tee make-test.out
     # REPORT_EXIST_STATUS doesn't seem to work before 5.5.
-    - ! grep -q FAILED make-test.out
+    - "! grep -q FAILED make-test.out"
