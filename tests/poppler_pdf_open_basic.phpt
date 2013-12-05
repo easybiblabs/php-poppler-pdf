@@ -1,5 +1,5 @@
 --TEST--
-poppler_open() function - basic test for poppler_open()
+basic test for poppler_pdf_open()
 --FILE--
 <?php
 $p = poppler_pdf_open("sample.pdf");
