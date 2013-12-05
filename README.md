@@ -16,9 +16,8 @@ does not expose the whole poppler API.
 todo
 ----
 
-    * api to get the text out of the PDF
-    * proper documentation
-    * setup/install stuff
+* proper documentation
+* setup/install stuff
 
 build
 -----
@@ -37,6 +36,10 @@ Returns a PopplerDocument resource, or `null` on errors.
     poppler_pdf_info(PopplerDocument $doc);
 
 Returns an array with PDF meta-data.
+
+    poppler_pdf_text(PopplerDocument $doc);
+
+Returns an array with PDF text data, chunked where the style changes.
 
 license
 -------
