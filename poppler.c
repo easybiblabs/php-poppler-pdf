@@ -13,8 +13,9 @@
 #include <glib.h>
 
 static zend_function_entry poppler_functions[] = {
-    PHP_FE(poppler_pdf_info, NULL)
     PHP_FE(poppler_pdf_open, NULL)
+    PHP_FE(poppler_pdf_info, NULL)
+    PHP_FE(poppler_pdf_text, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -120,6 +121,23 @@ PHP_FUNCTION(poppler_pdf_info)
     add_assoc_maybe_string(return_value, "creator", poppler_document_get_creator(doc));
     add_assoc_maybe_string(return_value, "producer", poppler_document_get_producer(doc));
 
+    add_assoc_long(return_value, "pages",             poppler_document_get_n_pages(doc));
     add_assoc_long(return_value, "creation_date",     poppler_document_get_creation_date(doc));
     add_assoc_long(return_value, "modification_date", poppler_document_get_modification_date(doc));
+}
+
+PHP_FUNCTION(poppler_pdf_text)
+{
+    PopplerDocument *doc;
+    long page;
+    zval *zdoc;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zdoc, &page) == FAILURE) {
+        RETURN_NULL();
+    }
+    ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
+
+    /// XXX TODO: get page; get text + attributes + merge them; return resulting data;
+    array_init(return_value);
+    add_assoc_long(return_value, "page", page);
 }
