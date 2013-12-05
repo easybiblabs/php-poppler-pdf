@@ -81,8 +81,8 @@ PHP_FUNCTION(poppler_pdf_info)
     add_assoc_maybe_string(return_value, "creator", poppler_document_get_creator(doc));
     add_assoc_maybe_string(return_value, "producer", poppler_document_get_producer(doc));
 
-    //add_assoc_string(return_value, "producer", poppler_document_get_creation_date(doc), 1);
-    //add_assoc_string(return_value, "producer", poppler_document_get_modification_date(doc), 1);
+    add_assoc_long(return_value, "creation_date",     poppler_document_get_creation_date(doc));
+    add_assoc_long(return_value, "modification_date", poppler_document_get_modification_date(doc));
 
     free(doc);
 }
