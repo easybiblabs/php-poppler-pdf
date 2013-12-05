@@ -1,6 +1,8 @@
 php-poppler-pdf
 ===============
 
+[![Build Status](https://travis-ci.org/easybiblabs/php-poppler-pdf.png?branch=master)](https://travis-ci.org/easybiblabs/php-poppler-pdf)
+
 WARNING
 -------
 
