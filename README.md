@@ -16,6 +16,7 @@ does not expose the whole poppler API.
 todo
 ----
 
+* fix encoding errors in text output
 * proper documentation
 * setup/install stuff
 

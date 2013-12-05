@@ -165,8 +165,11 @@ PHP_FUNCTION(poppler_pdf_text)
     }
     ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
 
+    if (page_i < 0 || page_i >= poppler_document_get_n_pages(doc)) {
+        RETURN_NULL();
+    }
     page = poppler_document_get_page(doc, page_i);
-    if (page == NULL || page < 0 || page >= poppler_document_get_n_pages(doc)) {
+    if (page == NULL) {
         RETURN_NULL();
     }
 
