@@ -1,3 +1,6 @@
+
+/* php boilerplate */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -31,14 +34,36 @@ zend_module_entry poppler_module_entry = {
 ZEND_GET_MODULE(poppler)
 #endif
 
+/* poppler */
+
+#include <poppler.h>
+#include <glib.h>
+
+/* main */
+
 PHP_FUNCTION(poppler_open)
 {
     char *name;
-    int name_len;
+    size_t name_len;
 
-     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &name_len) == FAILURE) {
+    PopplerDocument *doc;
+    GError *err = NULL;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &name_len) == FAILURE) {
         RETURN_NULL();
     }
-    php_printf("Hello %s", name);
+
+    doc = poppler_document_new_from_file(name, NULL, &err);
+    if (doc == NULL) {
+        /* TODO: check err, throw exception? */
+        php_printf("ERROR: %s\n", err->message);
+        RETURN_NULL();
+    }
+    php_printf("title: %s\n", poppler_document_get_title(doc));
+    php_printf("author: %s\n", poppler_document_get_author(doc));
+    php_printf("subject: %s\n", poppler_document_get_subject(doc));
+    php_printf("keywords: %s\n", poppler_document_get_keywords(doc));
+    php_printf("creator: %s\n", poppler_document_get_creator(doc));
+
     RETURN_STRING("Hello World", 1);
 }
