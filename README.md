@@ -1,5 +1,12 @@
-php-poppler
-===========
+php-poppler-pdf
+===============
+
+WARNING
+-------
+
+Work-in-progress, do not use yet!
+
+---
 
 A PHP extension using [libpoppler](http://poppler.freedesktop.org/).
 
