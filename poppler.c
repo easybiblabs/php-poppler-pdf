@@ -8,9 +8,10 @@
 #include "php.h"
 #include "php_poppler.h"
 
-/* poppler */
+/* poppler, etc. */
 #include <poppler.h>
 #include <glib.h>
+#include <unistd.h>
 
 static zend_function_entry poppler_functions[] = {
     PHP_FE(poppler_pdf_open, NULL)
@@ -82,6 +83,7 @@ PHP_FUNCTION(poppler_pdf_open)
 {
     char *name;
     size_t name_len;
+    gchar *uri;
 
     PopplerDocument *doc;
     GError *err = NULL;
@@ -90,7 +92,29 @@ PHP_FUNCTION(poppler_pdf_open)
         RETURN_NULL();
     }
 
-    doc = poppler_document_new_from_file(name, NULL, &err);
+    {
+        /* file name handling */
+        /* XXX this is hacky... */
+        gchar *cwd;
+        gchar *abs_name;
+
+        cwd = g_get_current_dir();
+        if (!g_path_is_absolute(name)) {
+            abs_name = g_build_filename(cwd, name, NULL);
+        } else {
+            abs_name = g_build_filename(name, NULL);
+        }
+        gfree(cwd);
+        uri = g_filename_to_uri(abs_name, NULL, NULL);
+        gfree(abs_name);
+        if (uri == NULL) {
+            /* TODO: throw exception? */
+            RETURN_NULL();
+        }
+    }
+    doc = poppler_document_new_from_file(uri, NULL, &err);
+    free(uri);
+
     if (doc == NULL) {
         /* TODO: throw exception? */
         /* php_printf("ERROR: %s\n", err->message); */
