@@ -166,7 +166,7 @@ PHP_FUNCTION(poppler_pdf_text)
     ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
 
     page = poppler_document_get_page(doc, page_i);
-    if (page == NULL) {
+    if (page == NULL || page < 0 || page >= poppler_document_get_n_pages(doc)) {
         RETURN_NULL();
     }
 
@@ -195,4 +195,5 @@ PHP_FUNCTION(poppler_pdf_text)
     }
 
     poppler_page_free_text_attributes(attr_list);
+    // XXX TODO free page?
 }

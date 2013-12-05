@@ -37,7 +37,7 @@ Returns a PopplerDocument resource, or `null` on errors.
 
 Returns an array with PDF meta-data.
 
-    poppler_pdf_text(PopplerDocument $doc);
+    poppler_pdf_text(PopplerDocument $doc, $page_number);
 
 Returns an array with PDF text data, chunked where the style changes.
 
