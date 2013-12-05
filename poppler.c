@@ -9,7 +9,7 @@
 #include "php_poppler.h"
 
 static zend_function_entry poppler_functions[] = {
-    PHP_FE(poppler_open, NULL)
+    PHP_FE(poppler_pdf_info, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -41,7 +41,7 @@ ZEND_GET_MODULE(poppler)
 
 /* main */
 
-PHP_FUNCTION(poppler_open)
+PHP_FUNCTION(poppler_pdf_info)
 {
     char *name;
     size_t name_len;
@@ -55,15 +55,17 @@ PHP_FUNCTION(poppler_open)
 
     doc = poppler_document_new_from_file(name, NULL, &err);
     if (doc == NULL) {
-        /* TODO: check err, throw exception? */
-        php_printf("ERROR: %s\n", err->message);
+        /* TODO: throw exception? */
+        /* php_printf("ERROR: %s\n", err->message); */
         RETURN_NULL();
     }
+
     php_printf("title: %s\n", poppler_document_get_title(doc));
     php_printf("author: %s\n", poppler_document_get_author(doc));
     php_printf("subject: %s\n", poppler_document_get_subject(doc));
     php_printf("keywords: %s\n", poppler_document_get_keywords(doc));
     php_printf("creator: %s\n", poppler_document_get_creator(doc));
 
+    free(doc);
     RETURN_STRING("Hello World", 1);
 }
