@@ -41,10 +41,22 @@ ZEND_GET_MODULE(poppler)
 
 int le_poppler_document;
 
+static void php_poppler_document_free(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+{
+    PopplerDocument *doc = (PopplerDocument*)rsrc->ptr;
+
+    if (doc != NULL) {
+        g_free(doc);
+    }
+}
+
 PHP_MINIT_FUNCTION(poppler)
 {
     le_poppler_document = zend_register_list_destructors_ex(
-        NULL, NULL, PHP_POPPLER_DOCUMENT_NAME, module_number
+        php_poppler_document_free,
+        NULL,
+        PHP_POPPLER_DOCUMENT_NAME,
+        module_number
     );
     return SUCCESS;
 }
@@ -110,6 +122,4 @@ PHP_FUNCTION(poppler_pdf_info)
 
     add_assoc_long(return_value, "creation_date",     poppler_document_get_creation_date(doc));
     add_assoc_long(return_value, "modification_date", poppler_document_get_modification_date(doc));
-
-    free(doc);
 }

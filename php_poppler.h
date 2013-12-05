@@ -9,8 +9,9 @@
 PHP_MINIT_FUNCTION(poppler);
 PHP_MSHUTDOWN_FUNCTION(poppler);
 
-PHP_FUNCTION(poppler_pdf_info);
 PHP_FUNCTION(poppler_pdf_open);
+
+PHP_FUNCTION(poppler_pdf_info);
 
 extern zend_module_entry poppler_module_entry;
 #define phpext_poppler_ptr &poppler_module_entry
