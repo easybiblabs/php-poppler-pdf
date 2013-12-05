@@ -6,7 +6,7 @@ php:
     - 5.5
 
 env:
-    - REPORT_EXIT_STATUS=1 NO_INTERACTION=1 TESTS="--show-all"
+    - REPORT_EXIT_STATUS=1 NO_INTERACTION=1 TESTS="-s /dev/null --show-all"
 
 before_script:
     - sudo apt-get -y install libpoppler-glib-dev
