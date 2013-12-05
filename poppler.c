@@ -8,8 +8,13 @@
 #include "php.h"
 #include "php_poppler.h"
 
+/* poppler */
+#include <poppler.h>
+#include <glib.h>
+
 static zend_function_entry poppler_functions[] = {
     PHP_FE(poppler_pdf_info, NULL)
+    PHP_FE(poppler_pdf_open, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -19,8 +24,8 @@ zend_module_entry poppler_module_entry = {
 #endif
     PHP_POPPLER_EXTNAME,
     poppler_functions,
-    NULL,
-    NULL,
+    PHP_MINIT(poppler),
+    PHP_MSHUTDOWN(poppler),
     NULL,
     NULL,
     NULL,
@@ -34,10 +39,20 @@ zend_module_entry poppler_module_entry = {
 ZEND_GET_MODULE(poppler)
 #endif
 
-/* poppler */
+int le_poppler_document;
 
-#include <poppler.h>
-#include <glib.h>
+PHP_MINIT_FUNCTION(poppler)
+{
+    le_poppler_document = zend_register_list_destructors_ex(
+        NULL, NULL, PHP_POPPLER_DOCUMENT_NAME, module_number
+    );
+    return SUCCESS;
+}
+
+PHP_MSHUTDOWN_FUNCTION(poppler)
+{
+    return SUCCESS;
+}
 
 /* main */
 
@@ -50,14 +65,13 @@ void add_assoc_maybe_string(zval *ret, const char *key, char *s)
     }
 }
 
-PHP_FUNCTION(poppler_pdf_info)
+PHP_FUNCTION(poppler_pdf_open)
 {
     char *name;
     size_t name_len;
 
     PopplerDocument *doc;
     GError *err = NULL;
-    gchar *s = NULL;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &name_len) == FAILURE) {
         RETURN_NULL();
@@ -69,6 +83,19 @@ PHP_FUNCTION(poppler_pdf_info)
         /* php_printf("ERROR: %s\n", err->message); */
         RETURN_NULL();
     }
+
+    ZEND_REGISTER_RESOURCE(return_value, doc, le_poppler_document);
+}
+
+PHP_FUNCTION(poppler_pdf_info)
+{
+    PopplerDocument *doc;
+    zval *zdoc;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zdoc) == FAILURE) {
+        RETURN_NULL();
+    }
+    ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
 
     array_init(return_value);
 

@@ -2,7 +2,8 @@
 poppler_open() function - basic test for poppler_open()
 --FILE--
 <?php
-var_dump(poppler_pdf_info("file:///home/richard/src/work/pdfminer/purification-green-fluor-protein-kit.pdf"));
+$p = poppler_pdf_open("file:///home/richard/src/work/pdfminer/purification-green-fluor-protein-kit.pdf");
+var_dump(poppler_pdf_info($p));
 ?>
 --EXPECT--
 TODO
