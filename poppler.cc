@@ -1,17 +1,18 @@
+#include <iostream>
+#include <poppler-document.h>
+#include <poppler-page.h>
+
+#include <poppler.h>
+
+using namespace std;
 
 /* php boilerplate */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "php.h"
 #include "php_poppler.h"
-
-/* poppler, etc. */
-#include <poppler.h>
-#include <glib.h>
-#include <unistd.h>
 
 static zend_function_entry poppler_functions[] = {
     PHP_FE(poppler_pdf_open, NULL)
@@ -45,10 +46,10 @@ int le_poppler_document;
 
 static void php_poppler_document_free(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
-    PopplerDocument *doc = (PopplerDocument*)rsrc->ptr;
+    poppler::document *doc = (poppler::document*)rsrc->ptr;
 
     if (doc != NULL) {
-        g_free(doc);
+        delete doc;
     }
 }
 
@@ -60,7 +61,6 @@ PHP_MINIT_FUNCTION(poppler)
         PHP_POPPLER_DOCUMENT_NAME,
         module_number
     );
-    g_type_init();
     return SUCCESS;
 }
 
@@ -84,37 +84,15 @@ PHP_FUNCTION(poppler_pdf_open)
 {
     char *name;
     size_t name_len;
-    gchar *uri;
 
-    PopplerDocument *doc;
-    GError *err = NULL;
+    poppler::document *doc;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &name, &name_len) == FAILURE) {
         RETURN_NULL();
     }
 
-    {
-        /* file name handling */
-        /* XXX this is hacky... */
-        gchar *cwd;
-        gchar *abs_name;
-
-        cwd = g_get_current_dir();
-        if (!g_path_is_absolute(name)) {
-            abs_name = g_build_filename(cwd, name, NULL);
-        } else {
-            abs_name = g_build_filename(name, NULL);
-        }
-        gfree(cwd);
-        uri = g_filename_to_uri(abs_name, NULL, NULL);
-        gfree(abs_name);
-        if (uri == NULL) {
-            /* TODO: throw exception? */
-            RETURN_NULL();
-        }
-    }
-    doc = poppler_document_new_from_file(uri, NULL, &err);
-    free(uri);
+    string s(name);
+    doc = poppler::document::load_from_file(s);
 
     if (doc == NULL) {
         /* TODO: throw exception? */
@@ -125,59 +103,66 @@ PHP_FUNCTION(poppler_pdf_open)
     ZEND_REGISTER_RESOURCE(return_value, doc, le_poppler_document);
 }
 
+
+// XXX pretty sure we're leaking here
+#define st(x) (reinterpret_cast<char *>(&(x.to_latin1()[0])))
+
 PHP_FUNCTION(poppler_pdf_info)
 {
-    PopplerDocument *doc;
+    poppler::document *doc;
     zval *zdoc;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zdoc) == FAILURE) {
         RETURN_NULL();
     }
-    ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
+    ZEND_FETCH_RESOURCE(doc, poppler::document*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
 
     array_init(return_value);
 
-    add_assoc_maybe_string(return_value, "pdf_version", poppler_document_get_pdf_version_string(doc));
+    // XXX TODO: get_pdf_id, get_pdf_version
 
-    add_assoc_maybe_string(return_value, "title", poppler_document_get_title(doc));
-    add_assoc_maybe_string(return_value, "author", poppler_document_get_author(doc));
-    add_assoc_maybe_string(return_value, "subject", poppler_document_get_subject(doc));
-    add_assoc_maybe_string(return_value, "keywords", poppler_document_get_keywords(doc));
-    add_assoc_maybe_string(return_value, "creator", poppler_document_get_creator(doc));
-    add_assoc_maybe_string(return_value, "producer", poppler_document_get_producer(doc));
+    add_assoc_maybe_string(return_value, "title", st(doc->info_key("Title")));
+    add_assoc_maybe_string(return_value, "author", st(doc->info_key("Author")));
+    add_assoc_maybe_string(return_value, "subject", st(doc->info_key("Subject")));
+    add_assoc_maybe_string(return_value, "keywords", st(doc->info_key("Keywords")));
+    add_assoc_maybe_string(return_value, "creator", st(doc->info_key("Creator")));
+    add_assoc_maybe_string(return_value, "producer", st(doc->info_key("Producer")));
 
-    add_assoc_long(return_value, "pages",             poppler_document_get_n_pages(doc));
-    add_assoc_long(return_value, "creation_date",     poppler_document_get_creation_date(doc));
-    add_assoc_long(return_value, "modification_date", poppler_document_get_modification_date(doc));
+    add_assoc_long(return_value, "pages", doc->pages());
+    add_assoc_long(return_value, "creation_date", doc->info_date("CreationDate"));
+    add_assoc_long(return_value, "modification_date", doc->info_date("ModDate"));
 }
 
 PHP_FUNCTION(poppler_pdf_text)
 {
-    PopplerDocument *doc;
-    PopplerPage *page;
+    poppler::document *doc;
+    poppler::page *page;
     long page_i;
     char *text;
     size_t textlen;
-    GList *attr_list;
     zval *zdoc;
+
+    GList *attr_list;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zdoc, &page_i) == FAILURE) {
         RETURN_NULL();
     }
-    ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
+    ZEND_FETCH_RESOURCE(doc, poppler::document*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
 
-    if (page_i < 0 || page_i >= poppler_document_get_n_pages(doc)) {
+    if (page_i < 0 || page_i >= doc->pages()) {
         RETURN_NULL();
     }
-    page = poppler_document_get_page(doc, page_i);
+    page = doc->create_page(page_i);
     if (page == NULL) {
         RETURN_NULL();
     }
 
-    text = poppler_page_get_text(page);
+    text = st(page->text(page->page_rect(), page->raw_order_layout));
     textlen = strlen(text);
 
     array_init(return_value);
+
+    // XXX TODO
 
     attr_list = poppler_page_get_text_attributes(page);
     {
@@ -186,7 +171,7 @@ PHP_FUNCTION(poppler_pdf_text)
         zval *text_part;
 
         for (el = g_list_first(attr_list); el; el = el->next) {
-            attr = el->data;
+            attr = (PopplerTextAttributes *)el->data;
             ALLOC_INIT_ZVAL(text_part);
             array_init(text_part);
 
@@ -197,7 +182,4 @@ PHP_FUNCTION(poppler_pdf_text)
             add_next_index_zval(return_value, text_part);
         }
     }
-
-    poppler_page_free_text_attributes(attr_list);
-    // XXX TODO free page?
 }
