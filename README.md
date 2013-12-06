@@ -19,8 +19,10 @@ todo
 ----
 
 * fix encoding errors in text output
+    * --> switch to C++, raw mode not exposed in C-API
 * proper documentation
 * setup/install stuff
+* gcov on travis / https://github.com/eddyxu/cpp-coveralls
 
 build
 -----
