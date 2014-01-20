@@ -3,10 +3,12 @@ basic test for poppler_pdf_info()
 --FILE--
 <?php
 $p = poppler_pdf_open("sample.pdf");
-var_dump(poppler_pdf_info($p));
+$info = poppler_pdf_info($p);
+unset($info["creation_date"]); // XXX changes on travis-CI
+var_dump($info);
 ?>
 --EXPECT--
-array(10) {
+array(9) {
   ["pdf_version"]=>
   string(7) "PDF-1.4"
   ["title"]=>
@@ -23,8 +25,6 @@ array(10) {
   string(15) "LibreOffice 4.1"
   ["pages"]=>
   int(1)
-  ["creation_date"]=>
-  int(1390224912)
   ["modification_date"]=>
   int(-1)
 }
