@@ -10,21 +10,21 @@ array(10) {
   ["pdf_version"]=>
   string(7) "PDF-1.4"
   ["title"]=>
-  string(35) "Microsoft Word - Sample Letter .doc"
+  string(14) "Metadata Title"
   ["author"]=>
-  string(7) "mbrusco"
+  NULL
   ["subject"]=>
-  NULL
+  string(16) "Metadata Subject"
   ["keywords"]=>
-  NULL
+  string(17) "Metadata Keywords"
   ["creator"]=>
-  string(26) "PScript5.dll Version 5.2.2"
+  string(6) "Writer"
   ["producer"]=>
-  string(33) "Acrobat Distiller 8.0.0 (Windows)"
+  string(15) "LibreOffice 4.1"
   ["pages"]=>
   int(1)
   ["creation_date"]=>
-  int(1236157910)
+  int(1390224912)
   ["modification_date"]=>
-  int(1236157910)
+  int(-1)
 }
