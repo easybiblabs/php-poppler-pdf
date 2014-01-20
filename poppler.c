@@ -17,6 +17,7 @@ static zend_function_entry poppler_functions[] = {
     PHP_FE(poppler_pdf_open, NULL)
     PHP_FE(poppler_pdf_info, NULL)
     PHP_FE(poppler_pdf_text, NULL)
+    PHP_FE(poppler_pdf_formatted_text, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -152,6 +153,36 @@ PHP_FUNCTION(poppler_pdf_info)
 }
 
 PHP_FUNCTION(poppler_pdf_text)
+{
+    PopplerDocument *doc;
+    PopplerPage *page;
+    long page_i;
+    char *text;
+    size_t textlen;
+    GList *attr_list;
+    zval *zdoc;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zdoc, &page_i) == FAILURE) {
+        RETURN_NULL();
+    }
+    ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
+
+    if (page_i < 0 || page_i >= poppler_document_get_n_pages(doc)) {
+        RETURN_NULL();
+    }
+    page = poppler_document_get_page(doc, page_i);
+    if (page == NULL) {
+        RETURN_NULL();
+    }
+
+    text = poppler_page_get_text(page);
+
+    RETURN_STRING(text, 1);
+
+    // XXX TODO free page / text?
+}
+
+PHP_FUNCTION(poppler_pdf_formatted_text)
 {
     PopplerDocument *doc;
     PopplerPage *page;

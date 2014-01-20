@@ -13,6 +13,7 @@ PHP_FUNCTION(poppler_pdf_open);
 
 PHP_FUNCTION(poppler_pdf_info);
 PHP_FUNCTION(poppler_pdf_text);
+PHP_FUNCTION(poppler_pdf_formatted_text);
 
 extern zend_module_entry poppler_module_entry;
 #define phpext_poppler_ptr &poppler_module_entry
