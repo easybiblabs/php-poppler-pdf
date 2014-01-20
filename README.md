@@ -42,7 +42,16 @@ Returns an array with PDF meta-data.
 
     poppler_pdf_text(PopplerDocument $doc, $page_number);
 
-Returns an array with PDF text data, chunked where the style changes.
+Returns a string with the (unformatted) text of that page.
+
+    poppler_pdf_formatted_text(PopplerDocument $doc, $page_number);
+
+Returns a list of chunks of that page's text, including formatting
+information.  The keys for each chunk are:
+* `text` - the raw text
+* `font_name` - the name of the font
+* `font_size` - the font size
+* `is_underlined` - whether or not the text is underlined (not very reliable)
 
 license
 -------
