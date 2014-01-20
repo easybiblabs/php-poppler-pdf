@@ -18,11 +18,8 @@ does not expose the whole poppler API.
 todo
 ----
 
-* fix encoding errors in text output
-    * --> switch to C++, raw mode not exposed in C-API
 * proper documentation
 * setup/install stuff
-* memory test on travis (-m in TESTS)
 * gcov on travis / https://github.com/eddyxu/cpp-coveralls
 
 build

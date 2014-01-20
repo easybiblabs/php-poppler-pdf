@@ -1,18 +1,14 @@
 language: php
 
 php:
-    - 5.3
-    - 5.4
     - 5.5
 
 env:
-    - REPORT_EXIT_STATUS=1 NO_INTERACTION=1 TESTS="-s /dev/null --show-all"
+    - REPORT_EXIT_STATUS=1 NO_INTERACTION=1 TESTS="-s /dev/null --show-all -m"
 
 before_script:
     - sudo apt-get -y install libpoppler-glib-dev
     - phpize && ./configure && make
 
 script:
-    - make test | tee make-test.out
-    # REPORT_EXIST_STATUS doesn't seem to work before 5.5.
-    - "! grep -q FAILED make-test.out"
+    - make test
