@@ -3,6 +3,8 @@ php-poppler-pdf
 
 [![Build Status](https://travis-ci.org/easybiblabs/php-poppler-pdf.png?branch=master)](https://travis-ci.org/easybiblabs/php-poppler-pdf)
 
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/1379/badge.svg)](https://scan.coverity.com/projects/1379)
+
 WARNING
 -------
 
