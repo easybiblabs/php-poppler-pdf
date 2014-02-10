@@ -1,14 +1,29 @@
 language: php
 
 php:
-    - 5.5
+  - 5.5
 
 env:
-    - REPORT_EXIT_STATUS=1 NO_INTERACTION=1 TESTS="-s /dev/null --show-all -m"
+  matrix:
+  - REPORT_EXIT_STATUS=1 NO_INTERACTION=1 TESTS="-s /dev/null --show-all -m" TRAVIS_REPO_SLUG=php-poppler-pdf
+  global:
+    secure: gZMl0cQR1RgIpnSwMHODlIj5j1yzlnCRMMImANLlZYQsE70RJotyrIRDImnGrdC2kAekGfXHnsaPS9I9mjEz7LrRA7SivyDZFnXHjz2Kwu/tpr4r6uvNnFFX/k1KeHVgaHb2fC6EaXyoKYdbdvTyyMQ/pNlw9zssPdwTrABqJAo=
 
 before_script:
-    - sudo apt-get -y install libpoppler-glib-dev valgrind
-    - phpize && ./configure && make
+  - sudo apt-get -y install libpoppler-glib-dev valgrind
+  - phpize && ./configure && make
 
 script:
-    - make test
+  - make test
+
+addons:
+
+  coverity_scan:
+    project:
+      name: php-poppler-pdf
+      version: 0.01
+      description: high-level libpoppler php extension
+    notification_email: richard@r-wos.org
+    build_command_prepend: make distclean && phpize && ./configure
+    build_command: make
+    branch_pattern: coverity_scan
