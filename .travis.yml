@@ -5,6 +5,10 @@ php:
 
 env:
     - REPORT_EXIT_STATUS=1 NO_INTERACTION=1 TESTS="-s /dev/null --show-all -m"
+    global:
+        # coverty scan token
+        - secure: "VLHIfJ9F3WidLcrkNvv3HYMOnrebZ0VuFRPqRuqGaaqtx4NxHgXnsL2g6QrUONAvH1daIAD2ZmFvD+HwxXRUqIk4a/CRryW3TZe7ugm5tBH5NGXDZpLgtDXMXQ9CGuV1E+CrOLqhYuAAl7YMX4xs7QE9CBdxZZBu50SKFDSFLSk="
+
 
 before_script:
     - sudo apt-get -y install libpoppler-glib-dev valgrind
@@ -12,3 +16,14 @@ before_script:
 
 script:
     - make test
+
+addons:
+    coverty_scan:
+        project:
+            name: php-poppler-pdf
+            version: 0.01
+            description: high-level libpoppler php extension
+            build_command_prepend: phpize && ./configure
+            build_command: make
+            branch_pattern: coverty_scan
+
