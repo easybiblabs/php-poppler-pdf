@@ -23,6 +23,7 @@ addons:
       name: php-poppler-pdf
       version: 0.01
       description: high-level libpoppler php extension
+    notification_email: richard@r-wos.org
     build_command_prepend: phpize && ./configure
     build_command: make
     branch_pattern: coverity_scan
