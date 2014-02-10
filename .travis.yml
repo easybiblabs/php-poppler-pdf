@@ -20,7 +20,7 @@ addons:
             name: php-poppler-pdf
             version: 0.01
             description: high-level libpoppler php extension
-            build_command_prepend: phpize && ./configure
-            build_command: make
-            branch_pattern: coverty_scan
+        build_command_prepend: phpize && ./configure
+        build_command: make
+        branch_pattern: coverty_scan
 
