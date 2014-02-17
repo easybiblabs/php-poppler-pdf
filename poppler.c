@@ -49,7 +49,7 @@ static void php_poppler_document_free(zend_rsrc_list_entry *rsrc TSRMLS_DC)
     PopplerDocument *doc = (PopplerDocument*)rsrc->ptr;
 
     if (doc != NULL) {
-        g_free(doc);
+        g_object_unref(doc);
     }
 }
 
@@ -176,10 +176,9 @@ PHP_FUNCTION(poppler_pdf_text)
     }
 
     text = poppler_page_get_text(page);
+    g_object_unref(page);
 
     RETURN_STRING(text, 1);
-
-    // XXX TODO free page / text?
 }
 
 PHP_FUNCTION(poppler_pdf_formatted_text)
@@ -230,5 +229,5 @@ PHP_FUNCTION(poppler_pdf_formatted_text)
     }
 
     poppler_page_free_text_attributes(attr_list);
-    // XXX TODO free page?
+    g_object_unref(page);
 }
