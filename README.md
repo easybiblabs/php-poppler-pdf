@@ -5,16 +5,9 @@ php-poppler-pdf
 
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/1379/badge.svg)](https://scan.coverity.com/projects/1379)
 
-WARNING
--------
-
-Work-in-progress, do not use yet!
-
----
-
 A PHP extension using [libpoppler](http://poppler.freedesktop.org/).
 
-This is (will be) a high-level binding (a bit like `pdfinfo` and `pdftotext`), and
+This is a high-level binding (a bit like `pdfinfo` and `pdftotext`), and
 does not expose the whole poppler API.
 
 todo
@@ -24,14 +17,18 @@ todo
 * setup/install stuff
 * gcov on travis / https://github.com/eddyxu/cpp-coveralls
 
-build
+Build
 -----
 
     $ phpize
     $ ./configure
     $ make
 
-functions
+If you happen to be on Ubuntu 12.04 LTS, you can also use [our
+PPA](https://launchpad.net/~easybib/+archive/php55). This extension
+is in there under the name `php5-easybib-poppler-pdf`.
+
+Functions
 ---------
 
     poppler_pdf_open($filename);
@@ -40,11 +37,11 @@ Returns a PopplerDocument resource, or `null` on errors.
 
     poppler_pdf_info(PopplerDocument $doc);
 
-Returns an array with PDF meta-data.
+Returns an array with PDF meta-data (like `pdfinfo`).
 
     poppler_pdf_text(PopplerDocument $doc, $page_number);
 
-Returns a string with the (unformatted) text of that page.
+Returns a string with the (unformatted) text of that page (like `pdftotext`).
 
     poppler_pdf_formatted_text(PopplerDocument $doc, $page_number);
 
@@ -55,7 +52,7 @@ information.  The keys for each chunk are:
 * `font_size` - the font size
 * `is_underlined` - whether or not the text is underlined (not very reliable)
 
-license
+License
 -------
 
 Copyright (C) 2013 by Richard Wossal <richard@r-wos.org>
@@ -78,4 +75,3 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
