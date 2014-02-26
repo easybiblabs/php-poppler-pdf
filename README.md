@@ -10,13 +10,6 @@ A PHP extension using [libpoppler](http://poppler.freedesktop.org/).
 This is a high-level binding (a bit like `pdfinfo` and `pdftotext`), and
 does not expose the whole poppler API.
 
-todo
-----
-
-* proper documentation
-* setup/install stuff
-* gcov on travis / https://github.com/eddyxu/cpp-coveralls
-
 Build
 -----
 
