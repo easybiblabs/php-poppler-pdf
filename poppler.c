@@ -67,6 +67,7 @@ PHP_MINIT_FUNCTION(poppler)
 
 PHP_MSHUTDOWN_FUNCTION(poppler)
 {
+    (void)poppler;
     return SUCCESS;
 }
 
@@ -106,9 +107,9 @@ PHP_FUNCTION(poppler_pdf_open)
         } else {
             abs_name = g_build_filename(name, NULL);
         }
-        gfree(cwd);
+        g_free(cwd);
         uri = g_filename_to_uri(abs_name, NULL, NULL);
-        gfree(abs_name);
+        g_free(abs_name);
         if (uri == NULL) {
             /* TODO: throw exception? */
             RETURN_NULL();
@@ -160,7 +161,6 @@ PHP_FUNCTION(poppler_pdf_text)
     PopplerPage *page;
     long page_i;
     char *text;
-    GList *attr_list;
     zval *zdoc;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zdoc, &page_i) == FAILURE) {
