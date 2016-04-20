@@ -44,7 +44,7 @@ ZEND_GET_MODULE(poppler)
 
 int le_poppler_document;
 
-static void php_poppler_document_free(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+static void php_poppler_document_free(zend_resource *rsrc TSRMLS_DC)
 {
     PopplerDocument *doc = (PopplerDocument*)rsrc->ptr;
 
@@ -77,7 +77,7 @@ void add_assoc_maybe_string(zval *ret, const char *key, char *s)
     if (s == NULL) {
         add_assoc_null(ret, key);
     } else {
-        add_assoc_string(ret, key, s, 1);
+        add_assoc_string(ret, key, s);
     }
 }
 
@@ -123,7 +123,7 @@ PHP_FUNCTION(poppler_pdf_open)
         RETURN_NULL();
     }
 
-    ZEND_REGISTER_RESOURCE(return_value, doc, le_poppler_document);
+    RETURN_RES(zend_register_resource(doc, le_poppler_document));
 }
 
 PHP_FUNCTION(poppler_pdf_info)
@@ -134,7 +134,9 @@ PHP_FUNCTION(poppler_pdf_info)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zdoc) == FAILURE) {
         RETURN_NULL();
     }
-    ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
+    if (NULL == (doc = (PopplerDocument *)zend_fetch_resource(Z_RES_P(zdoc), PHP_POPPLER_DOCUMENT_NAME, le_poppler_document))) {
+        RETURN_NULL();
+    }
 
     array_init(return_value);
 
@@ -158,14 +160,15 @@ PHP_FUNCTION(poppler_pdf_text)
     PopplerPage *page;
     long page_i;
     char *text;
-    size_t textlen;
     GList *attr_list;
     zval *zdoc;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zdoc, &page_i) == FAILURE) {
         RETURN_NULL();
     }
-    ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
+    if (NULL == (doc = (PopplerDocument *)zend_fetch_resource(Z_RES_P(zdoc), PHP_POPPLER_DOCUMENT_NAME, le_poppler_document))) {
+        RETURN_NULL();
+    }
 
     if (page_i < 0 || page_i >= poppler_document_get_n_pages(doc)) {
         RETURN_NULL();
@@ -178,7 +181,7 @@ PHP_FUNCTION(poppler_pdf_text)
     text = poppler_page_get_text(page);
     g_object_unref(page);
 
-    RETURN_STRING(text, 1);
+    RETURN_STRING(text);
 }
 
 PHP_FUNCTION(poppler_pdf_formatted_text)
@@ -187,14 +190,15 @@ PHP_FUNCTION(poppler_pdf_formatted_text)
     PopplerPage *page;
     long page_i;
     char *text;
-    size_t textlen;
     GList *attr_list;
     zval *zdoc;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zdoc, &page_i) == FAILURE) {
         RETURN_NULL();
     }
-    ZEND_FETCH_RESOURCE(doc, PopplerDocument*, &zdoc, -1, PHP_POPPLER_DOCUMENT_NAME, le_poppler_document);
+    if (NULL == (doc = (PopplerDocument *)zend_fetch_resource(Z_RES_P(zdoc), PHP_POPPLER_DOCUMENT_NAME, le_poppler_document))) {
+        RETURN_NULL();
+    }
 
     if (page_i < 0 || page_i >= poppler_document_get_n_pages(doc)) {
         RETURN_NULL();
@@ -205,7 +209,6 @@ PHP_FUNCTION(poppler_pdf_formatted_text)
     }
 
     text = poppler_page_get_text(page);
-    textlen = strlen(text);
 
     array_init(return_value);
 
@@ -213,18 +216,17 @@ PHP_FUNCTION(poppler_pdf_formatted_text)
     {
         GList *el;
         PopplerTextAttributes *attr;
-        zval *text_part;
+        zval text_part;
 
         for (el = g_list_first(attr_list); el; el = el->next) {
             attr = el->data;
-            ALLOC_INIT_ZVAL(text_part);
-            array_init(text_part);
+            array_init(&text_part);
 
-            add_assoc_stringl(text_part, "text", text + (attr->start_index), (attr->end_index) - (attr->start_index), 1);
-            add_assoc_maybe_string(text_part, "font_name", attr->font_name);
-            add_assoc_long(text_part, "font_size", attr->font_size);
-            add_assoc_bool(text_part, "is_underlined", attr->is_underlined);
-            add_next_index_zval(return_value, text_part);
+            add_assoc_stringl(&text_part, "text", text + (attr->start_index), (attr->end_index) - (attr->start_index));
+            add_assoc_maybe_string(&text_part, "font_name", attr->font_name);
+            add_assoc_long(&text_part, "font_size", attr->font_size);
+            add_assoc_bool(&text_part, "is_underlined", attr->is_underlined);
+            add_next_index_zval(return_value, &text_part);
         }
     }
 
