@@ -5,7 +5,7 @@ php:
 
 env:
   matrix:
-  - REPORT_EXIT_STATUS=1 NO_INTERACTION=1 TESTS="-s /dev/null --show-all -m" TRAVIS_REPO_SLUG=php-poppler-pdf CFLAGS="-O2 -Wall -Wextra -Werror"
+  - REPORT_EXIT_STATUS=1 NO_INTERACTION=1 TESTS="-s /dev/null --show-all -m" TRAVIS_REPO_SLUG=php-poppler-pdf CFLAGS="-O2 -Wall -Wextra"
   global:
     secure: gZMl0cQR1RgIpnSwMHODlIj5j1yzlnCRMMImANLlZYQsE70RJotyrIRDImnGrdC2kAekGfXHnsaPS9I9mjEz7LrRA7SivyDZFnXHjz2Kwu/tpr4r6uvNnFFX/k1KeHVgaHb2fC6EaXyoKYdbdvTyyMQ/pNlw9zssPdwTrABqJAo=
 
