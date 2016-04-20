@@ -18,7 +18,7 @@ static zend_function_entry poppler_functions[] = {
     PHP_FE(poppler_pdf_info, NULL)
     PHP_FE(poppler_pdf_text, NULL)
     PHP_FE(poppler_pdf_formatted_text, NULL)
-    {NULL, NULL, NULL}
+    {NULL, NULL, NULL, 0, 0}
 };
 
 zend_module_entry poppler_module_entry = {
@@ -67,7 +67,6 @@ PHP_MINIT_FUNCTION(poppler)
 
 PHP_MSHUTDOWN_FUNCTION(poppler)
 {
-    (void)poppler;
     return SUCCESS;
 }
 
